@@ -6,5 +6,6 @@ declare namespace NodeJS {
     DB_PSQL: string;
     PASSWORD_PSQL: string;
     PORT_PSQL: number;
+    OPENCAGE_API_KEY: string;
   }
 }
