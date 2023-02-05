@@ -48,7 +48,11 @@ class ClinicsController extends Controller {
       const mapped = await Promise.all(
         content!.map(async (item) => {
           const location = await getGeolocationFromAddress(item.address!);
-          return { ...item, location };
+          return {
+            ...item,
+            location,
+            url: process.env.PROD_URL + "/" + item.clinicSlug.split("/")[2],
+          };
         })
       );
       res.status(200).send({
@@ -62,15 +66,43 @@ class ClinicsController extends Controller {
     const content = await this.clinics.getFullInfoByClinicSlug(
       "/clinic/" + clinicSlug
     );
-    const location = await getGeolocationFromAddress(content.fullAddress);
-    // const
     if (!content) {
       res.status(200).send({
         message: "Clinic was not found",
       });
     } else {
+      const location = await getGeolocationFromAddress(content.fullAddress);
+      const nearbySuburbs = [
+        { name: content.nearby1txt, slug: content.nearby1link },
+        { name: content.nearby2txt, slug: content.nearby2link },
+        { name: content.nearby3txt, slug: content.nearby3link },
+        { name: content.nearby4txt, slug: content.nearby4link },
+      ].map((item) => {
+        return {
+          url: process.env.PROD_URL + "/suburbs/" + item.slug,
+          name: item.name,
+        };
+      });
+
       res.status(200).send({
-        content,
+        longNameVersion: content.longNameVersion,
+        metaTitle: content.metaTitle,
+        metaDescription: content.metaDescription,
+        aobutClinic: content.aboutClinic,
+        website: content.website,
+        registrationLink: content.typeformRegistrationLink,
+        displayOnWeb: content.displayOnWeb,
+        address: content.fullAddress,
+        city: content.city,
+        state: content.state,
+        postcode: content.postcode,
+        email: content.email,
+        phone: content.phone,
+        location,
+        suburb: content.suburb,
+        linkToTheSuburb:
+          process.env.PROD_URL + "/suburbs/" + content.linkToClinicSuburbPage,
+        nearbySuburbs: nearbySuburbs,
       });
     }
   };
