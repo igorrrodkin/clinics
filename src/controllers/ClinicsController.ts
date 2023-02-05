@@ -51,7 +51,9 @@ class ClinicsController extends Controller {
           return {
             ...item,
             location,
-            url: process.env.PROD_URL + "/" + item.clinicSlug.split("/")[2],
+            url: `${process.env.PROD_URL}/clinics/${
+              item.clinicSlug.split("/")[2]
+            }`,
           };
         })
       );
@@ -64,7 +66,7 @@ class ClinicsController extends Controller {
   public getClinicFullInfo: RequestHandler = async (req, res) => {
     const clinicSlug = req.params.clinicSlug;
     const content = await this.clinics.getFullInfoByClinicSlug(
-      "/clinic/" + clinicSlug
+      `/clinic/${clinicSlug}`
     );
     if (!content) {
       res.status(200).send({
@@ -79,7 +81,7 @@ class ClinicsController extends Controller {
         { name: content.nearby4txt, slug: content.nearby4link },
       ].map((item) => {
         return {
-          url: process.env.PROD_URL + "/suburbs/" + item.slug,
+          url: `${process.env.PROD_URL}/suburbs/${item.slug}`,
           name: item.name,
         };
       });
@@ -100,8 +102,7 @@ class ClinicsController extends Controller {
         phone: content.phone,
         location,
         suburb: content.suburb,
-        linkToTheSuburb:
-          process.env.PROD_URL + "/suburbs/" + content.linkToClinicSuburbPage,
+        linkToTheSuburb: `${process.env.PROD_URL}/suburbs/${content.linkToClinicSuburbPage}`,
         nearbySuburbs: nearbySuburbs,
       });
     }

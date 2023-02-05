@@ -133,6 +133,22 @@ class Clinics {
       .where(eq(clinics.slug, clinicSlug));
     return content[0];
   };
+
+  public getClinicsByCity = async (city: string) => {
+    const content = await this.db
+      .select(clinics)
+      .fields({
+        clinicName: clinics.clinicName,
+        clinicSlug: clinics.slug,
+        address: clinics.fullAddress,
+        website: clinics.website,
+        phone: clinics.phone,
+        email: clinics.email,
+        state: clinics.state,
+      })
+      .where(eq(clinics.city, city));
+    return content;
+  };
 }
 
 export default Clinics;
