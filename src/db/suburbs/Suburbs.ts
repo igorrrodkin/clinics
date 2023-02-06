@@ -36,6 +36,20 @@ class Suburbs {
       .where(eq(suburbs.suburbSlug, slug));
     return content[0];
   };
+
+  public getSuburbsByCity = async (city: string) => {
+    const content = await this.db
+      .select(suburbs)
+      .fields({
+        metaTitle: suburbs.metaTitle,
+        suburb: suburbs.suburbName,
+        slug: suburbs.suburbSlug,
+        city: suburbs.city,
+        state: suburbs.state,
+      })
+      .where(eq(suburbs.city, city));
+    return content;
+  };
 }
 
 export default Suburbs;

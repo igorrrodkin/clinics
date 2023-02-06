@@ -43,7 +43,7 @@ class SuburbsController extends Controller {
         };
       });
       res.status(200).send({
-        mappedContent,
+        content: mappedContent,
       });
     }
   };

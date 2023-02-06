@@ -15,7 +15,12 @@ const main = async () => {
 
   const controllers = [
     new ClinicsController("/clinics", new Clinics(client)),
-    new CitiesController("/cities", new Cities(client), new Clinics(client)),
+    new CitiesController(
+      "/cities",
+      new Cities(client),
+      new Clinics(client),
+      new Suburbs(client)
+    ),
     new SuburbsController("/suburbs", new Suburbs(client)),
   ];
   const port = process.env.PORT_APP || 5000;

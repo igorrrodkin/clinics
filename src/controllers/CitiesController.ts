@@ -4,13 +4,15 @@ import { catchAsync } from "../utils/catchAsync.js";
 // import { getGeolocationFromAddress } from "../utils/getGeolocation.js";
 import Cities from "../db/cities/Cities.js";
 import Clinics from "../db/clinics/Clinics.js";
+import Suburbs from "../db/suburbs/Suburbs.js";
 class ClinicsController extends Controller {
   public readonly path: string;
 
   public constructor(
     path: string,
     public readonly cities: Cities,
-    public readonly clinics: Clinics
+    public readonly clinics: Clinics,
+    public readonly suburbs: Suburbs
   ) {
     super("");
     this.path = path;
@@ -37,7 +39,7 @@ class ClinicsController extends Controller {
         };
       });
       res.status(200).send({
-        mapped,
+        content: mapped,
       });
     }
   };
@@ -53,6 +55,9 @@ class ClinicsController extends Controller {
       const clinicsInThisCity = await this.clinics.getClinicsByCity(
         content.cityName!
       );
+      const suburbsInThisCity = await this.suburbs.getSuburbsByCity(
+        content.cityName!
+      );
       const mappedClinics = clinicsInThisCity.map((item) => {
         return {
           clinic: item.clinicName,
@@ -66,9 +71,19 @@ class ClinicsController extends Controller {
           state: item.state,
         };
       });
+      const mappedSuburbs = suburbsInThisCity.map((item) => {
+        return {
+          metaTitle: item.metaTitle,
+          suburb: item.suburb,
+          slug: item.slug,
+          state: item.state,
+          url: `${process.env.PROD_URL}/suburbs/${item.slug}`,
+        };
+      });
       res.status(200).send({
         ...content,
         clinics: mappedClinics,
+        suburbs: mappedSuburbs,
       });
     }
   };
