@@ -18,7 +18,7 @@ class ClinicsController extends Controller {
   }
 
   public initializeRoutes = () => {
-    this.router.get("/search", this.findMyCity);
+    this.router.get("/search", catchAsync(this.findMyCity));
     this.router.get("/:citySlug", catchAsync(this.getFullCityInfo));
   };
 
