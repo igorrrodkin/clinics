@@ -26,7 +26,7 @@ class ClinicsController extends Controller {
         content = await this.clinics.getContentByCity(queryParam.city!);
         break;
       case "zip":
-        content = await this.clinics.getContentByZIPcode(queryParam.postcode!);
+        content = await this.clinics.getContentByZIPcode(queryParam.zip!);
         break;
       case "clinicName":
         content = await this.clinics.getContentByClinicName(
