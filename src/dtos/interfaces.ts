@@ -1,6 +1,6 @@
 export interface clinicQueryparams {
   city?: string;
-  zip?: string;
+  postcode?: string;
   state?: string;
   clinicName?: string;
   suburb?: string;
