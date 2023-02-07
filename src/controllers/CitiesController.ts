@@ -28,7 +28,7 @@ class ClinicsController extends Controller {
     const queryParam: { city?: string } = req.query;
     const content = await this.cities.getFullContent(queryParam.city!);
     if (!content!.length) {
-      res.status(200).send({
+      res.status(404).send({
         message: "No cities were found",
       });
     } else {
@@ -48,7 +48,7 @@ class ClinicsController extends Controller {
     const citySlug: string = req.params.citySlug;
     const content = await this.cities.getInfoByCitySlug(`/${citySlug}`);
     if (!content) {
-      res.status(200).send({
+      res.status(404).send({
         message: "City not found",
       });
     } else {

@@ -28,7 +28,7 @@ class SuburbsController extends Controller {
     const suburb = queryParam.suburb;
     const content = await this.suburbs.getContentBySuburb(suburb!);
     if (!content.length) {
-      res.status(200).send({
+      res.status(404).send({
         message: "Suburbs were not found",
       });
     } else {
@@ -52,7 +52,7 @@ class SuburbsController extends Controller {
     const slug = req.params.suburbSlug;
     const content = await this.suburbs.getFullContentBySlug(`${state}/${slug}`);
     if (!content) {
-      res.status(200).send({
+      res.status(404).send({
         message: "Suburbs was not found",
       });
     } else {

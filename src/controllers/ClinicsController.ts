@@ -26,7 +26,7 @@ class ClinicsController extends Controller {
         content = await this.clinics.getContentByCity(queryParam.city!);
         break;
       case "zip":
-        content = await this.clinics.getContentByZIPcode(queryParam.zip!);
+        content = await this.clinics.getContentByZIPcode(queryParam.postcode!);
         break;
       case "clinicName":
         content = await this.clinics.getContentByClinicName(
@@ -41,7 +41,7 @@ class ClinicsController extends Controller {
         break;
     }
     if (!content!.length) {
-      res.status(200).send({
+      res.status(404).send({
         message: "No clinics were found",
       });
     } else {
@@ -69,7 +69,7 @@ class ClinicsController extends Controller {
       `/clinic/${clinicSlug}`
     );
     if (!content) {
-      res.status(200).send({
+      res.status(404).send({
         message: "Clinic was not found",
       });
     } else {
