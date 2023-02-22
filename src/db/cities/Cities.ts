@@ -10,10 +10,10 @@ class Cities {
       .select(cities)
       .fields({
         city: cities.cityName,
-        state: cities.state,
+        // state: cities.state,
         slug: cities.citySlug,
-        metaTitle: cities.metaTitle,
-        metaDescription: cities.metaDescription,
+        // metaTitle: cities.metaTitle,
+        // metaDescription: cities.metaDescription,
       })
       .where(
         like(
@@ -27,6 +27,10 @@ class Cities {
   public getInfoByCitySlug = async (citySlug: string) => {
     const content = await this.db
       .select(cities)
+      .fields({
+        city: cities.cityName,
+        slug: cities.citySlug,
+      })
       .where(eq(cities.citySlug, citySlug));
     return content[0];
   };

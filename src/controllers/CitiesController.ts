@@ -5,6 +5,7 @@ import { catchAsync } from "../utils/catchAsync.js";
 import Cities from "../db/cities/Cities.js";
 import Clinics from "../db/clinics/Clinics.js";
 import Suburbs from "../db/suburbs/Suburbs.js";
+import { getGeolocationFromAddress } from "../utils/getGeolocation.js";
 class ClinicsController extends Controller {
   public readonly path: string;
 
@@ -27,12 +28,12 @@ class ClinicsController extends Controller {
   public findMyCity: RequestHandler = async (req, res) => {
     const queryParam: { city?: string } = req.query;
     const content = await this.cities.getFullContent(queryParam.city!);
-    if (!content!.length) {
+    if (!content.length) {
       res.status(404).send({
         message: "No cities were found",
       });
     } else {
-      const mapped = content!.map((item) => {
+      const mapped = content.map((item) => {
         return {
           ...item,
           url: process.env.PROD_URL + "/cities" + item.slug,
@@ -53,24 +54,27 @@ class ClinicsController extends Controller {
       });
     } else {
       const clinicsInThisCity = await this.clinics.getClinicsByCity(
-        content.cityName!
+        content.city!
       );
       const suburbsInThisCity = await this.suburbs.getSuburbsByCity(
-        content.cityName!
+        content.city!
       );
-      const mappedClinics = clinicsInThisCity.map((item) => {
-        return {
-          clinic: item.clinicName,
-          url: `${process.env.PROD_URL}/clinics/${
-            item.clinicSlug.split("/")[2]
-          }`,
-          address: item.address,
-          email: item.email,
-          phone: item.phone,
-          website: item.website,
-          state: item.state,
-        };
-      });
+      const mappedClinics = await Promise.all(
+        clinicsInThisCity.map(async (item) => {
+          return {
+            clinic: item.clinicName,
+            url: `${process.env.PROD_URL}/clinics/${
+              item.clinicSlug.split("/")[2]
+            }`,
+            address: item.address,
+            email: item.email,
+            phone: item.phone,
+            website: item.website,
+            state: item.state,
+            location: await getGeolocationFromAddress(item.address),
+          };
+        })
+      );
       const mappedSuburbs = suburbsInThisCity.map((item) => {
         return {
           metaTitle: item.metaTitle,
