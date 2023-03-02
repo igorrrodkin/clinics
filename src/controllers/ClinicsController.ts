@@ -48,7 +48,6 @@ class ClinicsController extends Controller {
         break;
       case "suburb":
         // content = await this.clinics.getContentBySuburb(queryParam.suburb!);
-        // break;
         fullContent = await this.clinics.getContent();
         content = fullContent.filter((item) => {
           return item.suburb
@@ -57,6 +56,7 @@ class ClinicsController extends Controller {
             .toLowerCase()
             .includes(queryParam.suburb!.toLowerCase());
         });
+        break;
     }
     if (!content!.length) {
       res.status(404).send({
