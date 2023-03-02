@@ -8,5 +8,6 @@ declare namespace NodeJS {
     PORT_PSQL: number;
     OPENCAGE_API_KEY: string;
     PROD_URL: string;
+    GOOGLE_MAPS_API_KEY: string;
   }
 }

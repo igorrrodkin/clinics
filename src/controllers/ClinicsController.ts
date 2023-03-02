@@ -3,7 +3,8 @@ import Controller from "./Controller.js";
 import { catchAsync } from "../utils/catchAsync.js";
 import Clinics from "../db/clinics/Clinics.js";
 import { clinicContent, clinicQueryparams } from "../dtos/interfaces.js";
-import { getGeolocationFromAddress } from "../utils/getGeolocation.js";
+// import { getGeolocationFromAddress } from "../utils/getGeolocation.js";
+import { getGeolocationGoogleService } from "../utils/getGeoGoogleMaps.js";
 class ClinicsController extends Controller {
   public readonly path: string;
 
@@ -47,7 +48,7 @@ class ClinicsController extends Controller {
     } else {
       const mapped = await Promise.all(
         content!.map(async (item) => {
-          const location = await getGeolocationFromAddress(item.address!);
+          const location = await getGeolocationGoogleService(item.address!);
           return {
             ...item,
             location,
@@ -73,7 +74,7 @@ class ClinicsController extends Controller {
         message: "Clinic was not found",
       });
     } else {
-      const location = await getGeolocationFromAddress(content.fullAddress);
+      const location = await getGeolocationGoogleService(content.fullAddress);
       const nearbySuburbs = [
         { name: content.nearby1txt, slug: content.nearby1link },
         { name: content.nearby2txt, slug: content.nearby2link },

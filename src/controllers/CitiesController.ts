@@ -1,11 +1,12 @@
 import { RequestHandler } from "express";
 import Controller from "./Controller.js";
 import { catchAsync } from "../utils/catchAsync.js";
-// import { getGeolocationFromAddress } from "../utils/getGeolocation.js";
 import Cities from "../db/cities/Cities.js";
 import Clinics from "../db/clinics/Clinics.js";
 import Suburbs from "../db/suburbs/Suburbs.js";
-import { getGeolocationFromAddress } from "../utils/getGeolocation.js";
+// import { getGeolocationFromAddress } from "../utils/getGeolocation.js";
+import { getGeolocationGoogleService } from "../utils/getGeoGoogleMaps.js";
+
 class ClinicsController extends Controller {
   public readonly path: string;
 
@@ -71,7 +72,7 @@ class ClinicsController extends Controller {
             phone: item.phone,
             website: item.website,
             state: item.state,
-            location: await getGeolocationFromAddress(item.address),
+            location: await getGeolocationGoogleService(item.address),
           };
         })
       );

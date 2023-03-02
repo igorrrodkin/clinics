@@ -1,9 +1,6 @@
 import { RequestHandler } from "express";
 import Controller from "./Controller.js";
 import { catchAsync } from "../utils/catchAsync.js";
-// import Clinics from "../db/clinics/Clinics.js";
-// import { clinicContent, clinicQueryparams } from "../dtos/interfaces.js";
-// import { getGeolocationFromAddress } from "../utils/getGeolocation.js";
 import Suburbs from "../db/suburbs/Suburbs.js";
 
 class SuburbsController extends Controller {
