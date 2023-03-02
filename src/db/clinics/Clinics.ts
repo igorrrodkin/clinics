@@ -34,6 +34,22 @@ class Clinics {
       );
     return content;
   };
+  public getContent = async () => {
+    const content = await this.db.select(clinics).fields({
+      clinicName: clinics.clinicName,
+      clinicSlug: clinics.slug,
+      address: clinics.fullAddress,
+      website: clinics.website,
+      phone: clinics.phone,
+      suburb: clinics.suburb,
+      zip: clinics.postcode,
+      email: clinics.email,
+      state: clinics.state,
+      city: clinics.city,
+      about: clinics.aboutClinic,
+    });
+    return content;
+  };
 
   public getContentByCity = async (city: string) => {
     const content = await this.db

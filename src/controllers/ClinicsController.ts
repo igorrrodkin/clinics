@@ -22,6 +22,7 @@ class ClinicsController extends Controller {
   public getAllClinics: RequestHandler = async (req, res) => {
     const queryParam: clinicQueryparams = req.query;
     let content: clinicContent[] | undefined;
+    let fullContent: clinicContent[] | undefined;
     switch (Object.keys(queryParam)[0]) {
       case "city":
         content = await this.clinics.getContentByCity(queryParam.city!);
@@ -30,16 +31,32 @@ class ClinicsController extends Controller {
         content = await this.clinics.getContentByZIPcode(queryParam.zip!);
         break;
       case "clinicName":
-        content = await this.clinics.getContentByClinicName(
-          queryParam.clinicName!
-        );
+        // content = await this.clinics.getContentByClinicName(
+        //   queryParam.clinicName!
+        // );
+        fullContent = await this.clinics.getContent();
+        content = fullContent.filter((item) => {
+          return item.clinicName
+            .replace(/\s+/g, "")
+            .replaceAll("&", "and")
+            .toLowerCase()
+            .includes(queryParam.clinicName!.toLowerCase());
+        });
         break;
       case "state":
         content = await this.clinics.getContentByState(queryParam.state!);
         break;
       case "suburb":
-        content = await this.clinics.getContentBySuburb(queryParam.suburb!);
-        break;
+        // content = await this.clinics.getContentBySuburb(queryParam.suburb!);
+        // break;
+        fullContent = await this.clinics.getContent();
+        content = fullContent.filter((item) => {
+          return item.suburb
+            .replace(/\s+/g, "")
+            .replaceAll("&", "and")
+            .toLowerCase()
+            .includes(queryParam.suburb!.toLowerCase());
+        });
     }
     if (!content!.length) {
       res.status(404).send({
