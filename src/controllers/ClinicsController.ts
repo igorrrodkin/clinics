@@ -38,7 +38,7 @@ class ClinicsController extends Controller {
         content = fullContent.filter((item) => {
           return item.clinicName
             .replace(/\s+/g, "")
-            .replaceAll("&", "and")
+            .replace("&", "and")
             .toLowerCase()
             .includes(queryParam.clinicName!.toLowerCase());
         });
@@ -52,7 +52,7 @@ class ClinicsController extends Controller {
         content = fullContent.filter((item) => {
           return item.suburb
             .replace(/\s+/g, "")
-            .replaceAll("&", "and")
+            .replace("&", "and")
             .toLowerCase()
             .includes(queryParam.suburb!.toLowerCase());
         });
