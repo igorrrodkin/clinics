@@ -3,10 +3,22 @@ import Controller from "./Controller.js";
 import { catchAsync } from "../utils/catchAsync.js";
 import Clinics from "../db/clinics/Clinics.js";
 import { clinicContent, clinicQueryparams } from "../dtos/interfaces.js";
-// import { getGeolocationFromAddress } from "../utils/getGeolocation.js";
-import { getGeolocationGoogleService } from "../utils/getGeoGoogleMaps.js";
+// import { getGeolocationGoogleService } from "../utils/getGeoGoogleMaps.js";
+import { getGeolocationFromAddress } from "../utils/getGeolocation.js";
+
 class ClinicsController extends Controller {
   public readonly path: string;
+
+  public readonly abbreviationToFullnameStates = [
+    { abbreviation: "ACT", fullname: "Australian Capital Territory" },
+    { abbreviation: "NSW", fullname: "New South Wales" },
+    { abbreviation: "VIC", fullname: "Victoria" },
+    { abbreviation: "WA", fullname: "Washington" },
+    { abbreviation: "QLD", fullname: "Queensland" },
+    { abbreviation: "NT", fullname: "Northern Territory" },
+    { abbreviation: "SA", fullname: "South Australia" },
+    { abbreviation: "TAS", fullname: "Tasmania" },
+  ];
 
   public constructor(path: string, public readonly clinics: Clinics) {
     super("");
@@ -15,7 +27,7 @@ class ClinicsController extends Controller {
   }
 
   public initializeRoutes = () => {
-    this.router.get("/search", catchAsync(this.getAllClinics));
+    this.router.get("/search", this.getAllClinics);
     this.router.get("/:clinicSlug", catchAsync(this.getClinicFullInfo));
   };
 
@@ -65,7 +77,7 @@ class ClinicsController extends Controller {
     } else {
       const mapped = await Promise.all(
         content!.map(async (item) => {
-          const location = await getGeolocationGoogleService(item.address!);
+          const location = await getGeolocationFromAddress(item.address!);
           return {
             ...item,
             location,
@@ -91,7 +103,7 @@ class ClinicsController extends Controller {
         message: "Clinic was not found",
       });
     } else {
-      const location = await getGeolocationGoogleService(content.fullAddress);
+      const location = await getGeolocationFromAddress(content.fullAddress);
       const nearbySuburbs = [
         { name: content.nearby1txt, slug: content.nearby1link },
         { name: content.nearby2txt, slug: content.nearby2link },
