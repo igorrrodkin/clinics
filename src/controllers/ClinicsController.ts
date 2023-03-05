@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { RequestHandler } from "express";
 import Controller from "./Controller.js";
 import { catchAsync } from "../utils/catchAsync.js";
@@ -5,6 +6,7 @@ import Clinics from "../db/clinics/Clinics.js";
 import { clinicContent, clinicQueryparams } from "../dtos/interfaces.js";
 // import { getGeolocationGoogleService } from "../utils/getGeoGoogleMaps.js";
 import { getGeolocationFromAddress } from "../utils/getGeolocation.js";
+import { splitOnChunks } from "../utils/arrToChunks.js";
 
 class ClinicsController extends Controller {
   public readonly path: string;
@@ -43,9 +45,6 @@ class ClinicsController extends Controller {
         content = await this.clinics.getContentByZIPcode(queryParam.zip!);
         break;
       case "clinicName":
-        // content = await this.clinics.getContentByClinicName(
-        //   queryParam.clinicName!
-        // );
         fullContent = await this.clinics.getContent();
         content = fullContent.filter((item) => {
           return item.clinicName
@@ -56,10 +55,27 @@ class ClinicsController extends Controller {
         });
         break;
       case "state":
-        content = await this.clinics.getContentByState(queryParam.state!);
+        const queryparamState = queryParam.state!;
+        const fullName2Abbr = this.abbreviationToFullnameStates.filter(
+          (item) => {
+            return item.fullname
+              .replace(/\s+/g, "")
+              .toLowerCase()
+              .startsWith(queryparamState.toLowerCase());
+          }
+        );
+        if (fullName2Abbr.length) {
+          const mapped = await Promise.all(
+            fullName2Abbr.map(async (item) => {
+              return await this.clinics.getContentByState(item.abbreviation);
+            })
+          );
+          content = mapped.flat(1);
+        } else {
+          content = await this.clinics.getContentByState(queryparamState);
+        }
         break;
       case "suburb":
-        // content = await this.clinics.getContentBySuburb(queryParam.suburb!);
         fullContent = await this.clinics.getContent();
         content = fullContent.filter((item) => {
           return item.suburb
@@ -77,7 +93,8 @@ class ClinicsController extends Controller {
     } else {
       const mapped = await Promise.all(
         content!.map(async (item) => {
-          const location = await getGeolocationFromAddress(item.address!);
+          // const location = await getGeolocationFromAddress(item.address!);
+          const location = { lat: 122, lng: 34 };
           return {
             ...item,
             location,
@@ -87,8 +104,17 @@ class ClinicsController extends Controller {
           };
         })
       );
+      let page = queryParam.page;
+      const clinicsAmount = mapped.length;
+      const pages = Math.floor(clinicsAmount / 200 + 1);
+      if (!page) {
+        page = "1";
+      }
+      const splitedOnPages = splitOnChunks(mapped, 200);
+      const currentPage = splitedOnPages[+page - 1];
       res.status(200).send({
-        mapped,
+        pages,
+        mapped: currentPage,
       });
     }
   };

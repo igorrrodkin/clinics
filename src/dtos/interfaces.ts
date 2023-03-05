@@ -4,6 +4,7 @@ export interface clinicQueryparams {
   state?: string;
   clinicName?: string;
   suburb?: string;
+  page?: string;
 }
 
 export interface clinicContent {

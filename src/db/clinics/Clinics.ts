@@ -134,12 +134,7 @@ class Clinics {
         city: clinics.city,
         about: clinics.aboutClinic,
       })
-      .where(
-        like(
-          clinics.state,
-          state.charAt(0).toUpperCase() + state.slice(1) + "%"
-        )
-      );
+      .where(like(clinics.state, state.toUpperCase() + "%"));
     return content;
   };
 
