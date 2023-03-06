@@ -29,7 +29,7 @@ class ClinicsController extends Controller {
   }
 
   public initializeRoutes = () => {
-    this.router.get("/search", this.getAllClinics);
+    this.router.get("/search", catchAsync(this.getAllClinics));
     this.router.get("/:clinicSlug", catchAsync(this.getClinicFullInfo));
   };
 
@@ -91,10 +91,18 @@ class ClinicsController extends Controller {
         message: "No clinics were found",
       });
     } else {
-      const mapped = await Promise.all(
-        content!.map(async (item) => {
-          // const location = await getGeolocationFromAddress(item.address!);
-          const location = { lat: 122, lng: 34 };
+      let page = queryParam.page;
+      const clinicsAmount = content!.length;
+      const pages = Math.floor(clinicsAmount / 200 + 1);
+      if (!page) {
+        page = "1";
+      }
+      const splitedOnPages: clinicContent[][] = splitOnChunks(content!, 200);
+      const currentPage: clinicContent[] = splitedOnPages[+page - 1];
+      const contentWithLocation = await Promise.all(
+        currentPage.map(async (item) => {
+          const location = await getGeolocationFromAddress(item.address!);
+          // const location = { lat: 122, lng: 34 };
           return {
             ...item,
             location,
@@ -104,17 +112,9 @@ class ClinicsController extends Controller {
           };
         })
       );
-      let page = queryParam.page;
-      const clinicsAmount = mapped.length;
-      const pages = Math.floor(clinicsAmount / 200 + 1);
-      if (!page) {
-        page = "1";
-      }
-      const splitedOnPages = splitOnChunks(mapped, 200);
-      const currentPage = splitedOnPages[+page - 1];
       res.status(200).send({
         pages,
-        mapped: currentPage,
+        mapped: contentWithLocation,
       });
     }
   };

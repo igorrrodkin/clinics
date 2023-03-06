@@ -1,5 +1,7 @@
-export const splitOnChunks = (arr: object[], chunkSize: number) => {
-  const result = arr.reduce((resultArray: object[][], item, index) => {
+import { clinicContent } from "../dtos/interfaces";
+
+export const splitOnChunks = (arr: clinicContent[], chunkSize: number) => {
+  const result = arr.reduce((resultArray: clinicContent[][], item, index) => {
     const chunkIndex = Math.floor(index / chunkSize);
 
     if (!resultArray[chunkIndex]) {
